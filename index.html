@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTubeチャンネル クイズ</title>
+<style>
+  :root{
+    --bg:#0f1226; --bg2:#1a1f3d; --card:#232a52; --card2:#2c3568;
+    --txt:#eef1ff; --sub:#9aa3d4; --line:#3a4380;
+    --accent:#ff5c8a; --accent2:#5cc8ff; --ok:#39d98a; --warn:#ffb44c;
+    --shadow:0 10px 40px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
+    background:radial-gradient(1200px 800px at 20% -10%,#27305f 0%,var(--bg) 55%) fixed;
+    color:var(--txt); min-height:100%;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:18px 18px 60px}
+  /* ---- top bar ---- */
+  .topbar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .logo{font-weight:800;font-size:20px;letter-spacing:.5px}
+  .logo .pill{background:var(--accent);color:#fff;padding:2px 10px;border-radius:999px;font-size:13px;margin-left:6px}
+  .spacer{flex:1}
+  .tabs{display:flex;gap:8px}
+  .tab{
+    background:var(--card);border:1px solid var(--line);color:var(--sub);
+    padding:8px 16px;border-radius:999px;cursor:pointer;font-weight:700;font-size:14px;
+    transition:.15s;
+  }
+  .tab:hover{color:var(--txt)}
+  .tab.active{background:var(--accent);color:#fff;border-color:transparent}
+  /* ---- buttons ---- */
+  .btn{
+    border:none;border-radius:12px;padding:13px 22px;font-size:16px;font-weight:800;
+    cursor:pointer;transition:.15s;color:#fff;background:var(--accent);box-shadow:var(--shadow);
+  }
+  .btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+  .btn:active{transform:translateY(0)}
+  .btn.sec{background:var(--card2);border:1px solid var(--line)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--sub);box-shadow:none}
+  .btn.sm{padding:8px 14px;font-size:14px;border-radius:10px}
+  .btn.blue{background:var(--accent2);color:#06243a}
+  .btn.green{background:var(--ok);color:#053a23}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  /* ---- cards ---- */
+  .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);
+    border-radius:20px;padding:26px;box-shadow:var(--shadow)}
+  .muted{color:var(--sub)}
+  .center{text-align:center}
+  .hide{display:none!important}
+
+  /* ---- start screen ---- */
+  .hero{text-align:center;padding:50px 20px}
+  .hero h1{font-size:34px;margin:0 0 8px}
+  .hero p{color:var(--sub);margin:0 0 28px}
+  .countbadge{display:inline-block;background:var(--card);border:1px solid var(--line);
+    padding:6px 16px;border-radius:999px;color:var(--sub);margin-bottom:26px;font-weight:700}
+
+  /* ---- play screen ---- */
+  .progress{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:var(--sub);font-weight:700}
+  .pbar{flex:1;height:8px;background:var(--card);border-radius:99px;overflow:hidden}
+  .pbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.3s}
+  .qtype{display:inline-block;font-size:13px;font-weight:800;padding:4px 12px;border-radius:999px;margin-bottom:14px}
+  .qtype.choice{background:rgba(92,200,255,.15);color:var(--accent2)}
+  .qtype.free{background:rgba(255,180,76,.15);color:var(--warn)}
+  .qtext{font-size:28px;font-weight:800;line-height:1.4;margin:0 0 26px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.choices{grid-template-columns:1fr}}
+  .choice{
+    display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);
+    border-radius:14px;padding:18px 20px;font-size:18px;font-weight:700;
+  }
+  .choice .key{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:var(--card2);
+    display:grid;place-items:center;font-weight:900;color:var(--sub)}
+  .choice.correct{border-color:var(--ok);background:rgba(57,217,138,.12)}
+  .choice.correct .key{background:var(--ok);color:#053a23}
+  .freebox{background:var(--card);border:2px dashed var(--line);border-radius:14px;padding:24px;
+    text-align:center;color:var(--sub);font-weight:700}
+
+  /* ---- answer screen ---- */
+  .anslabel{color:var(--sub);font-weight:800;letter-spacing:1px;font-size:13px;margin-bottom:6px}
+  .answer{font-size:30px;font-weight:900;color:var(--ok);margin:0 0 18px;line-height:1.3}
+  .videowrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:16px;
+    overflow:hidden;border:1px solid var(--line);margin-bottom:16px}
+  .videowrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .playthumb{position:absolute;inset:0;display:grid;place-items:center;cursor:pointer;
+    background:linear-gradient(135deg,#1b2350,#0d1130)}
+  .playthumb .pcircle{width:84px;height:84px;border-radius:50%;background:var(--accent);
+    display:grid;place-items:center;box-shadow:var(--shadow);transition:.15s}
+  .playthumb:hover .pcircle{transform:scale(1.08)}
+  .playthumb .pcircle::after{content:"";border-style:solid;border-width:16px 0 16px 26px;
+    border-color:transparent transparent transparent #fff;margin-left:6px}
+  .playthumb .ptext{position:absolute;bottom:16px;color:var(--sub);font-weight:700;font-size:14px}
+  .comment{background:rgba(255,92,138,.1);border:1px solid rgba(255,92,138,.4);border-radius:14px;
+    padding:16px 20px;font-size:17px;line-height:1.6}
+  .comment b{color:var(--accent)}
+
+  .navrow{display:flex;gap:12px;margin-top:24px;align-items:center}
+  .navrow .spacer{flex:1}
+
+  /* ---- create screen ---- */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+  label.fld{display:block;margin-bottom:14px}
+  label.fld > span{display:block;font-weight:800;font-size:13px;color:var(--sub);margin-bottom:6px}
+  input[type=text],input[type=number],textarea,select{
+    width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+    padding:11px 13px;color:var(--txt);font-size:15px;font-family:inherit;
+  }
+  textarea{resize:vertical;min-height:64px}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent2)}
+  .seg{display:flex;gap:8px}
+  .seg .opt{flex:1;text-align:center;padding:11px;border:1px solid var(--line);border-radius:10px;
+    cursor:pointer;font-weight:800;color:var(--sub);background:var(--bg2)}
+  .seg .opt.on{background:var(--accent);color:#fff;border-color:transparent}
+  .radio{display:flex;align-items:center;gap:8px;margin-top:6px;color:var(--sub);font-size:13px;font-weight:700}
+  .qlist{margin-top:8px}
+  .qrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:12px 16px;margin-bottom:10px}
+  .qrow .idx{width:28px;height:28px;flex:0 0 28px;border-radius:8px;background:var(--card2);
+    display:grid;place-items:center;font-weight:900;color:var(--sub);font-size:14px}
+  .qrow .qmeta{flex:1;min-width:0}
+  .qrow .qmeta .t{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .qrow .qmeta .s{font-size:12px;color:var(--sub);margin-top:2px}
+  .tagx{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;margin-right:6px}
+  .tagx.choice{background:rgba(92,200,255,.15);color:var(--accent2)}
+  .tagx.free{background:rgba(255,180,76,.15);color:var(--warn)}
+  .row-actions{display:flex;gap:6px}
+  .iconbtn{background:var(--card2);border:1px solid var(--line);color:var(--sub);border-radius:8px;
+    width:36px;height:36px;cursor:pointer;font-size:15px}
+  .iconbtn:hover{color:var(--txt)}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .hint{font-size:12px;color:var(--sub);margin-top:4px}
+  .empty{text-align:center;color:var(--sub);padding:40px 0;font-weight:700}
+  .sectitle{font-size:18px;font-weight:900;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  .sectitle .n{background:var(--accent);color:#fff;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:14px}
+  hr.sep{border:none;border-top:1px solid var(--line);margin:24px 0}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+    background:var(--ok);color:#053a23;font-weight:800;padding:12px 22px;border-radius:12px;
+    box-shadow:var(--shadow);opacity:0;transition:.25s;pointer-events:none;z-index:50}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo">🎬 YouTubeクイズ<span class="pill" id="chanName">チャンネル</span></div>
+    <div class="spacer"></div>
+    <div class="tabs">
+      <button class="tab active" data-tab="play" id="tabPlay">▶ 出題</button>
+      <button class="tab" data-tab="create" id="tabCreate">✎ 作成</button>
+    </div>
+  </div>
+
+  <!-- ============ PLAY: start ============ -->
+  <section id="startView" class="card hero">
+    <div id="sharedBanner" class="hide" style="background:rgba(92,200,255,.12);border:1px solid var(--accent2);border-radius:12px;padding:10px 16px;margin-bottom:18px;color:var(--accent2);font-weight:700;font-size:14px">
+      🔗 共有されたクイズを開いています
+    </div>
+    <h1>クイズスタート</h1>
+    <p>みんなで画面を見ながら、ワイワイ答えよう！</p>
+    <div class="countbadge" id="startCount">問題数 0</div><br>
+    <button class="btn" id="startBtn" style="font-size:18px;padding:16px 40px">▶ はじめる</button>
+    <div id="startEmpty" class="muted hide" style="margin-top:18px">
+      まだ問題がありません。右上の「✎ 作成」から追加してください。
+    </div>
+    <div id="importSharedWrap" class="hide" style="margin-top:22px">
+      <button class="btn ghost sm" id="importSharedBtn">＋ このクイズを自分の作成リストに取り込む</button>
+    </div>
+  </section>
+
+  <!-- ============ PLAY: question ============ -->
+  <section id="quizView" class="card hide">
+    <div class="progress">
+      <span id="progLabel">Q1 / 10</span>
+      <div class="pbar"><i id="progBar" style="width:0%"></i></div>
+    </div>
+    <div id="qstage"></div>
+    <div class="navrow">
+      <button class="btn ghost sm" id="quitBtn">■ やめる</button>
+      <div class="spacer"></div>
+      <button class="btn" id="revealBtn">答えを見る →</button>
+    </div>
+  </section>
+
+  <!-- ============ PLAY: answer ============ -->
+  <section id="ansView" class="card hide">
+    <div class="anslabel">正解</div>
+    <h2 class="answer" id="ansText">—</h2>
+    <div class="videowrap" id="videoWrap"></div>
+    <div id="ytFallback" style="margin:-6px 0 14px"></div>
+    <div class="comment hide" id="ansComment"></div>
+    <div class="navrow">
+      <button class="btn ghost sm" id="quitBtn2">■ やめる</button>
+      <div class="spacer"></div>
+      <button class="btn sec" id="backToQBtn">← 問題に戻る</button>
+      <button class="btn green" id="nextBtn">次の問題へ →</button>
+    </div>
+  </section>
+
+  <!-- ============ PLAY: finish ============ -->
+  <section id="finishView" class="card hero hide">
+    <h1>🎉 おしまい！</h1>
+    <p>全 <b id="finishCount">0</b> 問おつかれさまでした。</p>
+    <button class="btn" id="restartBtn">もう一度はじめる</button>
+  </section>
+
+  <!-- ============ CREATE ============ -->
+  <section id="createView" class="hide">
+    <div class="card" style="margin-bottom:18px">
+      <div class="toolbar">
+        <button class="btn sm" id="shareBtn">🔗 共有リンクを作成</button>
+        <button class="btn blue sm" id="exportBtn">⬇ エクスポート(JSON)</button>
+        <button class="btn sec sm" id="importBtn">⬆ インポート</button>
+        <input type="file" id="importFile" accept="application/json" class="hide">
+        <div class="spacer" style="flex:1"></div>
+        <button class="btn ghost sm" id="clearAllBtn">🗑 全消去</button>
+      </div>
+      <div id="shareResult" class="hide" style="margin-top:4px">
+        <div class="hint" style="margin-bottom:6px">このURLを送れば、相手はどの端末でもそのまま遊べます（クリップボードにコピー済み）。</div>
+        <textarea id="shareUrl" readonly style="min-height:54px;font-size:12px;color:var(--accent2)"></textarea>
+        <div class="navrow" style="margin-top:8px">
+          <div class="spacer"></div>
+          <button class="btn sm" id="copyShareBtn">コピー</button>
+        </div>
+      </div>
+      <label class="fld" style="margin:0">
+        <span>チャンネル名（任意・右上の表示に使います）</span>
+        <input type="text" id="chanInput" placeholder="例：〇〇チャンネル">
+      </label>
+    </div>
+
+    <div class="card" style="margin-bottom:18px">
+      <h3 class="sectitle"><span class="n">+</span><span id="formTitle">新しい問題を追加</span></h3>
+
+      <label class="fld">
+        <span>出題形式</span>
+        <div class="seg" id="typeSeg">
+          <div class="opt on" data-type="choice">4択</div>
+          <div class="opt" data-type="free">自由回答</div>
+        </div>
+      </label>
+
+      <label class="fld">
+        <span>問題文 *</span>
+        <textarea id="fQuestion" placeholder="例：このチャンネルの記念すべき第1回の企画は？"></textarea>
+      </label>
+
+      <!-- choices -->
+      <div id="choiceBlock">
+        <span style="display:block;font-weight:800;font-size:13px;color:var(--sub);margin-bottom:6px">選択肢（正解にチェック）*</span>
+        <div id="choiceRows"></div>
+      </div>
+
+      <!-- free answer / display answer -->
+      <label class="fld">
+        <span id="answerLabel">正解の表示テキスト（自由回答の答え）*</span>
+        <input type="text" id="fAnswer" placeholder="答え合わせ画面に大きく表示される正解">
+        <div class="hint">4択の場合は空欄でOK（チェックした選択肢が正解として表示されます）。上書きしたいときだけ入力。</div>
+      </label>
+
+      <hr class="sep">
+      <h3 class="sectitle"><span class="n">▶</span>答えの映像（YouTube）</h3>
+      <label class="fld">
+        <span>YouTube URL または 動画ID</span>
+        <input type="text" id="fUrl" placeholder="https://www.youtube.com/watch?v=XXXX や youtu.be/XXXX">
+        <div class="hint" id="urlHint">空欄でも保存できます（その問題は映像なし）。</div>
+      </label>
+      <div class="grid2">
+        <label class="fld">
+          <span>開始（秒）</span>
+          <input type="number" id="fStart" min="0" placeholder="例：125（2分5秒）">
+        </label>
+        <label class="fld">
+          <span>終了（秒・任意）</span>
+          <input type="number" id="fEnd" min="0" placeholder="空欄なら最後まで">
+        </label>
+      </div>
+
+      <label class="fld">
+        <span>一言コメント（任意・答え合わせで表示）</span>
+        <textarea id="fComment" placeholder="例：実はこの回が伝説の始まり…"></textarea>
+      </label>
+
+      <div class="navrow">
+        <button class="btn ghost sm hide" id="cancelEditBtn">編集をやめる</button>
+        <div class="spacer"></div>
+        <button class="btn green" id="saveQBtn">この問題を保存</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="sectitle"><span class="n">≡</span>問題リスト <span class="muted" style="font-weight:700;font-size:14px" id="listCount"></span></h3>
+      <div class="qlist" id="qlist"></div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   YouTubeチャンネル クイズ — 単一HTMLファイル / localStorage
+   ========================================================= */
+const LS_KEY = "yt_quiz_data_v1";
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+/* ---- state ---- */
+let state = load();            // {channel, questions:[...]}
+let editingId = null;          // 作成フォームで編集中のID
+let formType = "choice";       // 作成フォームの形式
+let play = { order:[], pos:0 };// 出題中の状態
+let sharedMode = false;        // URLで共有されたクイズを開いているか（true時はlocalStorageに保存しない）
+
+/* ---- data model ----
+  question = {
+    id, type:"choice"|"free", question,
+    choices:[a,b,c,d], answerIndex,   // choice用
+    answer,                            // 表示する正解テキスト
+    videoId, start, end, comment,
+    imageUrl                           // ※将来の拡張用（未使用）
+  }
+*/
+
+function load(){
+  try{
+    const d = JSON.parse(localStorage.getItem(LS_KEY));
+    if(d && Array.isArray(d.questions)) return d;
+  }catch(e){}
+  return { channel:"", questions:[] };
+}
+function save(){
+  if(!sharedMode) localStorage.setItem(LS_KEY, JSON.stringify(state)); // 共有モードでは保存しない
+  syncChannelName();
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* ---- YouTube URL parse ---- */
+function parseVideoId(input){
+  if(!input) return "";
+  input = input.trim();
+  // 既にIDっぽい（11文字・記号なし）
+  if(/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+  let m;
+  if((m = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/))) return m[1];
+  if((m = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/))) return m[1];
+  if((m = input.match(/\/embed\/([a-zA-Z0-9_-]{11})/))) return m[1];
+  if((m = input.match(/\/shorts\/([a-zA-Z0-9_-]{11})/))) return m[1];
+  if((m = input.match(/([a-zA-Z0-9_-]{11})/))) return m[1];
+  return "";
+}
+/* URLに ?t=90 や &t=1m30s が付いていたら開始秒を拾う */
+function parseStartFromUrl(input){
+  if(!input) return null;
+  let m = input.match(/[?&](?:t|start)=([0-9hms]+)/);
+  if(!m) return null;
+  let v = m[1];
+  if(/^\d+$/.test(v)) return parseInt(v,10);
+  let s=0, mm;
+  if((mm=v.match(/(\d+)h/))) s+=parseInt(mm[1])*3600;
+  if((mm=v.match(/(\d+)m/))) s+=parseInt(mm[1])*60;
+  if((mm=v.match(/(\d+)s/))) s+=parseInt(mm[1]);
+  return s||null;
+}
+
+/* =========================================================
+   タブ切替
+   ========================================================= */
+function setTab(tab){
+  $$(".tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===tab));
+  if(tab==="play"){ showStart(); $("#createView").classList.add("hide"); }
+  else{ hideAll(); $("#createView").classList.remove("hide"); renderCreate(); }
+}
+$$(".tab").forEach(t=>t.onclick=()=>setTab(t.dataset.tab));
+
+/* =========================================================
+   出題（PLAY）
+   ========================================================= */
+function hideAll(){
+  ["startView","quizView","ansView","finishView","createView"].forEach(id=>$("#"+id).classList.add("hide"));
+}
+function showStart(){
+  hideAll();
+  $("#startView").classList.remove("hide");
+  const n = state.questions.length;
+  $("#startCount").textContent = "問題数 "+n;
+  $("#startBtn").classList.toggle("hide", n===0);
+  $("#startEmpty").classList.toggle("hide", n!==0);
+}
+function startQuiz(){
+  if(state.questions.length===0) return;
+  play.order = state.questions.map((_,i)=>i);   // 作成順（固定）
+  play.pos = 0;
+  renderQuestion();
+}
+function curQ(){ return state.questions[play.order[play.pos]]; }
+
+function renderQuestion(){
+  hideAll();
+  $("#quizView").classList.remove("hide");
+  const q = curQ(), total = play.order.length;
+  $("#progLabel").textContent = `Q${play.pos+1} / ${total}`;
+  $("#progBar").style.width = ((play.pos)/total*100)+"%";
+
+  const typeTag = q.type==="choice"
+    ? `<span class="qtype choice">4択</span>`
+    : `<span class="qtype free">自由回答</span>`;
+  let body = `${typeTag}<h2 class="qtext">${esc(q.question)}</h2>`;
+  if(q.type==="choice"){
+    body += `<div class="choices">` + q.choices.map((c,i)=>
+      `<div class="choice"><span class="key">${"ABCD"[i]}</span><span>${esc(c)}</span></div>`
+    ).join("") + `</div>`;
+  }else{
+    body += `<div class="freebox">みんなで答えを言ってみよう！</div>`;
+  }
+  $("#qstage").innerHTML = body;
+}
+function revealAnswer(){
+  hideAll();
+  $("#ansView").classList.remove("hide");
+  const q = curQ();
+  $("#ansText").textContent = answerTextOf(q);
+
+  // video
+  const vw = $("#videoWrap");
+  const fb = $("#ytFallback");
+  if(q.videoId){
+    vw.classList.remove("hide");
+    vw.innerHTML = `<div class="playthumb" id="playThumb">
+        <div class="pcircle"></div>
+        <div class="ptext">クリックで映像を再生</div>
+      </div>`;
+    $("#playThumb").onclick = ()=>{
+      let src = `https://www.youtube-nocookie.com/embed/${q.videoId}?autoplay=1&rel=0&playsinline=1`;
+      if(q.start) src += `&start=${q.start}`;
+      if(q.end)   src += `&end=${q.end}`;
+      vw.innerHTML = `<iframe src="${src}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
+    };
+    // 保険: 埋め込みが再生できない場合に別タブでYouTubeを開く
+    let wurl = `https://www.youtube.com/watch?v=${q.videoId}`;
+    if(q.start) wurl += `&t=${q.start}s`;
+    fb.innerHTML = `<a href="${wurl}" target="_blank" rel="noopener"
+        style="color:var(--accent2);font-weight:700;font-size:14px;text-decoration:none">
+        ↗ 再生できないときは YouTube で開く</a>`;
+  }else{
+    vw.classList.add("hide");
+    vw.innerHTML = "";
+    fb.innerHTML = "";
+  }
+
+  // comment
+  const cm = $("#ansComment");
+  if(q.comment && q.comment.trim()){
+    cm.classList.remove("hide");
+    cm.innerHTML = `<b>💬 </b>${esc(q.comment)}`;
+  }else{
+    cm.classList.add("hide");
+  }
+  $("#progBar").style.width = ((play.pos+1)/play.order.length*100)+"%";
+}
+function answerTextOf(q){
+  if(q.answer && q.answer.trim()) return q.answer;
+  if(q.type==="choice" && q.choices[q.answerIndex]!=null) return q.choices[q.answerIndex];
+  return "（正解未設定）";
+}
+function backToQuestion(){
+  stopVideo();
+  renderQuestion();   // 戻ると問題画面（選択肢のハイライトなし版）
+}
+function nextQuestion(){
+  stopVideo();
+  if(play.pos < play.order.length-1){ play.pos++; renderQuestion(); }
+  else{ hideAll(); $("#finishView").classList.remove("hide"); $("#finishCount").textContent = play.order.length; }
+}
+function stopVideo(){ $("#videoWrap").innerHTML=""; }
+
+$("#startBtn").onclick = startQuiz;
+$("#revealBtn").onclick = revealAnswer;
+$("#backToQBtn").onclick = backToQuestion;
+$("#nextBtn").onclick = nextQuestion;
+$("#restartBtn").onclick = startQuiz;
+$("#quitBtn").onclick = $("#quitBtn2").onclick = ()=>{ stopVideo(); showStart(); };
+
+/* =========================================================
+   作成（CREATE）
+   ========================================================= */
+const CHOICE_N = 4;
+function buildChoiceRows(values=["","","",""], correct=0){
+  const wrap = $("#choiceRows");
+  wrap.innerHTML = "";
+  for(let i=0;i<CHOICE_N;i++){
+    const row = document.createElement("div");
+    row.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:10px";
+    row.innerHTML = `
+      <label style="display:flex;align-items:center;gap:6px;color:var(--sub);font-weight:800;font-size:13px;white-space:nowrap">
+        <input type="radio" name="correct" value="${i}" ${i===correct?"checked":""}> 正解
+      </label>
+      <span style="width:24px;text-align:center;font-weight:900;color:var(--sub)">${"ABCD"[i]}</span>
+      <input type="text" class="choiceInput" data-i="${i}" value="${attr(values[i]||"")}" placeholder="選択肢${"ABCD"[i]}">
+    `;
+    wrap.appendChild(row);
+  }
+}
+function setFormType(t){
+  formType = t;
+  $$("#typeSeg .opt").forEach(o=>o.classList.toggle("on", o.dataset.type===t));
+  $("#choiceBlock").classList.toggle("hide", t!=="choice");
+  $("#answerLabel").textContent = t==="choice"
+    ? "正解の表示テキスト（任意・上書き用）"
+    : "正解の表示テキスト *";
+}
+$$("#typeSeg .opt").forEach(o=>o.onclick=()=>setFormType(o.dataset.type));
+
+function clearForm(){
+  editingId = null;
+  $("#formTitle").textContent = "新しい問題を追加";
+  $("#cancelEditBtn").classList.add("hide");
+  setFormType("choice");
+  $("#fQuestion").value=""; $("#fAnswer").value="";
+  $("#fUrl").value=""; $("#fStart").value=""; $("#fEnd").value=""; $("#fComment").value="";
+  buildChoiceRows();
+}
+function saveQuestion(){
+  const question = $("#fQuestion").value.trim();
+  if(!question){ toast("問題文を入力してください", true); return; }
+
+  const urlRaw = $("#fUrl").value.trim();
+  const videoId = parseVideoId(urlRaw);
+  if(urlRaw && !videoId){ toast("YouTube URL / ID が認識できません", true); return; }
+
+  let start = numOrNull($("#fStart").value);
+  if(start==null) start = parseStartFromUrl(urlRaw); // URLの t= から補完
+  const end = numOrNull($("#fEnd").value);
+
+  const q = {
+    id: editingId || uid(),
+    type: formType,
+    question,
+    answer: $("#fAnswer").value.trim(),
+    videoId,
+    start: start||0,
+    end: end||null,
+    comment: $("#fComment").value.trim(),
+    imageUrl: "" // 将来拡張用
+  };
+
+  if(formType==="choice"){
+    const inputs = $$(".choiceInput");
+    q.choices = inputs.map(i=>i.value.trim());
+    if(q.choices.filter(c=>c).length < 2){ toast("選択肢を2つ以上入力してください", true); return; }
+    const r = document.querySelector('input[name="correct"]:checked');
+    q.answerIndex = r ? parseInt(r.value,10) : 0;
+    if(!q.choices[q.answerIndex]){ toast("正解にチェックした選択肢が空です", true); return; }
+  }else{
+    if(!q.answer){ toast("自由回答の正解テキストを入力してください", true); return; }
+    q.choices = []; q.answerIndex = 0;
+  }
+
+  if(editingId){
+    const idx = state.questions.findIndex(x=>x.id===editingId);
+    if(idx>=0) state.questions[idx] = q;
+    toast("問題を更新しました");
+  }else{
+    state.questions.push(q);
+    toast("問題を追加しました");
+  }
+  save();
+  clearForm();
+  renderList();
+}
+function editQuestion(id){
+  const q = state.questions.find(x=>x.id===id);
+  if(!q) return;
+  editingId = id;
+  $("#formTitle").textContent = "問題を編集";
+  $("#cancelEditBtn").classList.remove("hide");
+  setFormType(q.type);
+  $("#fQuestion").value = q.question;
+  $("#fAnswer").value = q.answer||"";
+  $("#fUrl").value = q.videoId ? ("https://youtu.be/"+q.videoId) : "";
+  $("#fStart").value = q.start||"";
+  $("#fEnd").value = q.end||"";
+  $("#fComment").value = q.comment||"";
+  if(q.type==="choice") buildChoiceRows(q.choices, q.answerIndex);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function delQuestion(id){
+  if(!confirm("この問題を削除しますか？")) return;
+  state.questions = state.questions.filter(x=>x.id!==id);
+  if(editingId===id) clearForm();
+  save(); renderList();
+}
+function moveQuestion(id, dir){
+  const i = state.questions.findIndex(x=>x.id===id);
+  const j = i+dir;
+  if(i<0||j<0||j>=state.questions.length) return;
+  [state.questions[i],state.questions[j]] = [state.questions[j],state.questions[i]];
+  save(); renderList();
+}
+function renderList(){
+  const list = $("#qlist");
+  $("#listCount").textContent = `（${state.questions.length}問）`;
+  if(state.questions.length===0){
+    list.innerHTML = `<div class="empty">まだ問題がありません。上のフォームから追加してください。</div>`;
+    return;
+  }
+  list.innerHTML = state.questions.map((q,i)=>{
+    const tag = q.type==="choice"
+      ? `<span class="tagx choice">4択</span>` : `<span class="tagx free">自由</span>`;
+    const vid = q.videoId ? "🎬" : "—";
+    return `<div class="qrow">
+      <div class="idx">${i+1}</div>
+      <div class="qmeta">
+        <div class="t">${tag}${esc(q.question||"（無題）")}</div>
+        <div class="s">正解: ${esc(answerTextOf(q))} ・ 映像 ${vid}${q.videoId&&q.start?` @${q.start}s`:""}</div>
+      </div>
+      <div class="row-actions">
+        <button class="iconbtn" title="上へ" onclick="moveQuestion('${q.id}',-1)">↑</button>
+        <button class="iconbtn" title="下へ" onclick="moveQuestion('${q.id}',1)">↓</button>
+        <button class="iconbtn" title="編集" onclick="editQuestion('${q.id}')">✎</button>
+        <button class="iconbtn" title="削除" onclick="delQuestion('${q.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+function renderCreate(){
+  $("#chanInput").value = state.channel||"";
+  if(!$("#choiceRows").children.length) buildChoiceRows();
+  renderList();
+}
+
+$("#saveQBtn").onclick = saveQuestion;
+$("#cancelEditBtn").onclick = clearForm;
+$("#chanInput").oninput = e=>{ state.channel = e.target.value; save(); };
+$("#clearAllBtn").onclick = ()=>{
+  if(!confirm("全ての問題を削除します。よろしいですか？（エクスポートでバックアップ推奨）")) return;
+  state.questions = []; save(); clearForm(); renderList();
+};
+
+/* ---- export / import ---- */
+$("#exportBtn").onclick = ()=>{
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  const name = (state.channel||"quiz").replace(/[\\/:*?"<>|]/g,"_");
+  a.download = `${name}_クイズ.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast("エクスポートしました");
+};
+/* 取り込み共通処理（ファイルインポート／共有クイズの取り込みで再利用）*/
+function importData(d){
+  if(!d || !Array.isArray(d.questions)) { toast("データを読み込めませんでした", true); return false; }
+  const mode = state.questions.length
+    ? (confirm("OK＝今のリストに追加 / キャンセル＝置き換え") ? "append":"replace")
+    : "replace";
+  if(mode==="replace"){ state = { channel:d.channel||"", questions:[] }; }
+  d.questions.forEach(q=>{ const c = Object.assign({}, q); c.id = uid(); state.questions.push(c); });
+  if(mode==="replace" && d.channel) state.channel = d.channel;
+  save(); renderCreate();
+  toast("取り込みました（"+d.questions.length+"問）");
+  return true;
+}
+$("#importBtn").onclick = ()=>$("#importFile").click();
+$("#importFile").onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{ importData(JSON.parse(r.result)); }
+    catch(err){ toast("ファイルを読み込めませんでした", true); }
+    e.target.value = "";
+  };
+  r.readAsText(f);
+};
+
+/* =========================================================
+   utils
+   ========================================================= */
+function numOrNull(v){ v=String(v).trim(); if(v==="") return null; const n=parseInt(v,10); return isNaN(n)?null:n; }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function attr(s){ return esc(s); }
+function syncChannelName(){ $("#chanName").textContent = state.channel?state.channel:"チャンネル"; }
+let toastTimer;
+function toast(msg, isErr){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.style.background = isErr ? "var(--warn)" : "var(--ok)";
+  t.style.color = isErr ? "#3a2406" : "#053a23";
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 1900);
+}
+
+/* expose for inline onclick */
+window.moveQuestion=moveQuestion; window.editQuestion=editQuestion; window.delQuestion=delQuestion;
+
+/* =========================================================
+   共有リンク（URLハッシュにクイズを埋め込む）
+   - ブラウザ標準の gzip(CompressionStream) + base64url。
+   - gzip非対応の古い環境では自動で無圧縮にフォールバック。
+   - ハッシュ(#以降)はサーバーに送信されないため、内容が外部に渡らない。
+   ========================================================= */
+function bytesToB64url(bytes){
+  let bin=""; for(let i=0;i<bytes.length;i++) bin+=String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function b64urlToBytes(s){
+  s=s.replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="=";
+  const bin=atob(s), bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  return bytes;
+}
+async function encodeShare(obj){
+  const bytes=new TextEncoder().encode(JSON.stringify(obj));
+  if(window.CompressionStream){
+    const cs=new CompressionStream("gzip"); const w=cs.writable.getWriter();
+    w.write(bytes); w.close();
+    const buf=await new Response(cs.readable).arrayBuffer();
+    return "g"+bytesToB64url(new Uint8Array(buf));
+  }
+  return "r"+bytesToB64url(bytes);
+}
+async function decodeShare(str){
+  const flag=str[0]; let bytes=b64urlToBytes(str.slice(1));
+  if(flag==="g"){
+    if(!window.DecompressionStream) throw new Error("gzip未対応");
+    const ds=new DecompressionStream("gzip"); const w=ds.writable.getWriter();
+    w.write(bytes); w.close();
+    const buf=await new Response(ds.readable).arrayBuffer();
+    bytes=new Uint8Array(buf);
+  }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+function getHashShare(){
+  const m=location.hash.match(/[#&]q=([^&]+)/);
+  return m?decodeURIComponent(m[1]):null;
+}
+
+/* 共有リンク作成 */
+$("#shareBtn").onclick = async ()=>{
+  if(state.questions.length===0){ toast("先に問題を作成してください", true); return; }
+  try{
+    const payload={ channel:state.channel||"", questions:state.questions };
+    const enc=await encodeShare(payload);
+    const url=location.origin+location.pathname+"#q="+enc;
+    $("#shareUrl").value=url;
+    $("#shareResult").classList.remove("hide");
+    try{ await navigator.clipboard.writeText(url); }catch(e){}
+    if(location.protocol==="file:"){
+      toast("作成しました（注意：file://のリンクは他端末では開けません）", true);
+    }else if(url.length>8000){
+      toast("作成しましたが長すぎます。JSONエクスポート共有を推奨", true);
+    }else{
+      toast("共有リンクをコピーしました");
+    }
+  }catch(e){ toast("リンク作成に失敗しました", true); }
+};
+$("#copyShareBtn").onclick = async ()=>{
+  const el=$("#shareUrl"); el.select();
+  try{ await navigator.clipboard.writeText(el.value); toast("コピーしました"); }
+  catch(e){ document.execCommand("copy"); toast("コピーしました"); }
+};
+
+/* 共有モードに入る */
+function enterSharedMode(data){
+  sharedMode = true;
+  state = { channel:data.channel||"", questions:(data.questions||[]) };
+  $("#tabCreate").classList.add("hide");      // 受信者には作成タブを出さない
+  $("#sharedBanner").classList.remove("hide");
+  $("#importSharedWrap").classList.remove("hide");
+  syncChannelName();
+  showStart();
+}
+$("#importSharedBtn").onclick = ()=>{
+  // 共有クイズを自分のローカル作成リストへ取り込む（編集可能にする）
+  const data={ channel:state.channel, questions:state.questions };
+  sharedMode=false;                 // 以降は通常モード（localStorageへ保存）
+  state=load();                     // 自分の保存データを読み直してから
+  if(importData(data)){             // 追加/置き換えを選んで取り込み
+    location.hash="";               // 共有ハッシュを消す
+    $("#tabCreate").classList.remove("hide");
+    $("#sharedBanner").classList.add("hide");
+    $("#importSharedWrap").classList.add("hide");
+    setTab("create");
+  }else{
+    sharedMode=true;                // 取り込みキャンセル時は共有モードへ戻す
+  }
+};
+
+/* ---- init ---- */
+(async function init(){
+  buildChoiceRows();
+  const hash=getHashShare();
+  if(hash){
+    try{ enterSharedMode(await decodeShare(hash)); return; }
+    catch(e){ toast("共有リンクを読み込めませんでした", true); }
+  }
+  syncChannelName();
+  showStart();
+})();
+</script>
+</body>
+</html>
