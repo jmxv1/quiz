@@ -3,102 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YouTubeチャンネル クイズ</title>
+<title>吉田さんちのファミリー日記クイズ</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap');
+
   :root{
-    --bg:#0f1226; --bg2:#1a1f3d; --card:#232a52; --card2:#2c3568;
-    --txt:#eef1ff; --sub:#9aa3d4; --line:#3a4380;
-    --accent:#ff5c8a; --accent2:#5cc8ff; --ok:#39d98a; --warn:#ffb44c;
-    --shadow:0 10px 40px rgba(0,0,0,.45);
+    --bg:#FEF0F8; --bg2:#FCE4F2; --card:#FFFFFF; --card2:#FFF5FB;
+    --txt:#3D1557; --sub:#A07CBD; --line:#F0C0E0;
+    --accent:#FF6BAE; --accent2:#9B5DE5; --ok:#06D6A0; --warn:#FF9F1C;
+    --shadow:0 8px 28px rgba(255,107,174,.22);
+    --shadow2:0 4px 16px rgba(155,93,229,.15);
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
   body{
-    font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
-    background:radial-gradient(1200px 800px at 20% -10%,#27305f 0%,var(--bg) 55%) fixed;
+    font-family:"Nunito","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
+    background:linear-gradient(135deg,#FEF0F8 0%,#F0E8FF 50%,#E8F4FF 100%) fixed;
     color:var(--txt); min-height:100%;
   }
   .wrap{max-width:1000px;margin:0 auto;padding:18px 18px 60px}
   /* ---- top bar ---- */
-  .topbar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
-  .logo{font-weight:800;font-size:20px;letter-spacing:.5px}
-  .logo .pill{background:var(--accent);color:#fff;padding:2px 10px;border-radius:999px;font-size:13px;margin-left:6px}
+  .topbar{display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+  .logo{font-weight:900;font-size:22px;letter-spacing:.5px;color:var(--txt)}
+  .logo .pill{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;padding:3px 12px;border-radius:999px;font-size:13px;margin-left:8px;
+    box-shadow:0 3px 10px rgba(255,107,174,.4);
+  }
   .spacer{flex:1}
   .tabs{display:flex;gap:8px}
   .tab{
-    background:var(--card);border:1px solid var(--line);color:var(--sub);
-    padding:8px 16px;border-radius:999px;cursor:pointer;font-weight:700;font-size:14px;
-    transition:.15s;
+    background:var(--card);border:2px solid var(--line);color:var(--sub);
+    padding:9px 18px;border-radius:999px;cursor:pointer;font-weight:800;font-size:14px;
+    transition:.2s;box-shadow:0 2px 8px rgba(0,0,0,.06);
   }
-  .tab:hover{color:var(--txt)}
-  .tab.active{background:var(--accent);color:#fff;border-color:transparent}
+  .tab:hover{color:var(--txt);border-color:var(--accent);transform:translateY(-1px)}
+  .tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:var(--shadow)}
   /* ---- buttons ---- */
   .btn{
-    border:none;border-radius:12px;padding:13px 22px;font-size:16px;font-weight:800;
-    cursor:pointer;transition:.15s;color:#fff;background:var(--accent);box-shadow:var(--shadow);
+    border:none;border-radius:999px;padding:13px 26px;font-size:16px;font-weight:900;
+    cursor:pointer;transition:.2s;color:#fff;
+    background:linear-gradient(135deg,var(--accent),#FF4D9E);
+    box-shadow:0 4px 16px rgba(255,107,174,.45);
+    font-family:inherit;
   }
-  .btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(255,107,174,.55)}
   .btn:active{transform:translateY(0)}
-  .btn.sec{background:var(--card2);border:1px solid var(--line)}
-  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--sub);box-shadow:none}
-  .btn.sm{padding:8px 14px;font-size:14px;border-radius:10px}
-  .btn.blue{background:var(--accent2);color:#06243a}
-  .btn.green{background:var(--ok);color:#053a23}
-  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .btn.sec{background:var(--card);border:2px solid var(--line);color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .btn.sec:hover{border-color:var(--accent);box-shadow:0 4px 14px rgba(255,107,174,.25)}
+  .btn.ghost{background:transparent;border:2px solid var(--line);color:var(--sub);box-shadow:none}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.sm{padding:9px 18px;font-size:14px}
+  .btn.blue{background:linear-gradient(135deg,var(--accent2),#7C3AED);box-shadow:0 4px 16px rgba(155,93,229,.4)}
+  .btn.blue:hover{box-shadow:0 6px 22px rgba(155,93,229,.55)}
+  .btn.green{background:linear-gradient(135deg,var(--ok),#059669);box-shadow:0 4px 16px rgba(6,214,160,.4);color:#fff}
+  .btn.green:hover{box-shadow:0 6px 22px rgba(6,214,160,.55)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
   /* ---- cards ---- */
-  .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);
-    border-radius:20px;padding:26px;box-shadow:var(--shadow)}
+  .card{
+    background:var(--card);border:2px solid var(--line);
+    border-radius:28px;padding:28px;box-shadow:var(--shadow2);
+  }
   .muted{color:var(--sub)}
   .center{text-align:center}
   .hide{display:none!important}
 
   /* ---- start screen ---- */
-  .hero{text-align:center;padding:50px 20px}
-  .hero h1{font-size:34px;margin:0 0 8px}
-  .hero p{color:var(--sub);margin:0 0 28px}
-  .countbadge{display:inline-block;background:var(--card);border:1px solid var(--line);
-    padding:6px 16px;border-radius:999px;color:var(--sub);margin-bottom:26px;font-weight:700}
+  .hero{text-align:center;padding:48px 24px 52px}
+  .hero-deco{font-size:56px;margin-bottom:12px;display:block;animation:bounce 2s infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .hero h1{font-size:36px;margin:0 0 10px;font-weight:900;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .hero p{color:var(--sub);margin:0 0 28px;font-size:16px;font-weight:700}
+  .countbadge{
+    display:inline-block;
+    background:linear-gradient(135deg,#FFF0F8,#F3E8FF);
+    border:2px solid var(--line);
+    padding:8px 22px;border-radius:999px;color:var(--sub);margin-bottom:28px;font-weight:800;
+    box-shadow:0 2px 8px rgba(155,93,229,.1);
+  }
 
   /* ---- play screen ---- */
-  .progress{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:var(--sub);font-weight:700}
-  .pbar{flex:1;height:8px;background:var(--card);border-radius:99px;overflow:hidden}
-  .pbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.3s}
-  .qtype{display:inline-block;font-size:13px;font-weight:800;padding:4px 12px;border-radius:999px;margin-bottom:14px}
-  .qtype.choice{background:rgba(92,200,255,.15);color:var(--accent2)}
-  .qtype.free{background:rgba(255,180,76,.15);color:var(--warn)}
-  .qtext{font-size:28px;font-weight:800;line-height:1.4;margin:0 0 26px}
+  .progress{display:flex;align-items:center;gap:12px;margin-bottom:20px;color:var(--sub);font-weight:800}
+  .pbar{flex:1;height:10px;background:#F0E8FF;border-radius:99px;overflow:hidden}
+  .pbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.4s;border-radius:99px}
+  .qtype{display:inline-block;font-size:13px;font-weight:900;padding:5px 14px;border-radius:999px;margin-bottom:14px;letter-spacing:.5px}
+  .qtype.choice{background:linear-gradient(135deg,#F0E8FF,#E8D5FF);color:var(--accent2);border:1.5px solid #D4B8FF}
+  .qtype.free{background:linear-gradient(135deg,#FFF8E8,#FFE8C0);color:var(--warn);border:1.5px solid #FFD080}
+  .qtext{font-size:26px;font-weight:900;line-height:1.45;margin:0 0 26px;color:var(--txt)}
+  .qthumb{
+    position:relative;width:100%;max-width:480px;margin:0 auto 26px;aspect-ratio:16/9;
+    border-radius:18px;overflow:hidden;border:2px solid var(--line);
+    box-shadow:var(--shadow2);background:#2D1557;
+  }
+  .qthumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .qthumb .ytmark{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:62px;height:44px;border-radius:12px;background:rgba(255,0,80,.9);
+    display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.4);
+  }
+  .qthumb .ytmark::after{content:"";border-style:solid;border-width:10px 0 10px 17px;
+    border-color:transparent transparent transparent #fff;margin-left:3px}
   .choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media(max-width:680px){.choices{grid-template-columns:1fr}}
   .choice{
-    display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);
-    border-radius:14px;padding:18px 20px;font-size:18px;font-weight:700;
+    display:flex;align-items:center;gap:14px;background:var(--card);
+    border:2px solid var(--line);
+    border-radius:18px;padding:18px 20px;font-size:17px;font-weight:800;
+    transition:.15s;cursor:default;
+    box-shadow:0 3px 10px rgba(155,93,229,.07);
   }
-  .choice .key{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:var(--card2);
-    display:grid;place-items:center;font-weight:900;color:var(--sub)}
-  .choice.correct{border-color:var(--ok);background:rgba(57,217,138,.12)}
-  .choice.correct .key{background:var(--ok);color:#053a23}
-  .freebox{background:var(--card);border:2px dashed var(--line);border-radius:14px;padding:24px;
-    text-align:center;color:var(--sub);font-weight:700}
+  .choice .key{
+    width:36px;height:36px;flex:0 0 36px;border-radius:50%;
+    background:linear-gradient(135deg,#F3E8FF,#FFE0F0);
+    border:2px solid var(--line);
+    display:grid;place-items:center;font-weight:900;color:var(--accent2);font-size:15px;
+  }
+  .choice.correct{border-color:var(--ok);background:linear-gradient(135deg,#EDFFF8,#D4FFF0)}
+  .choice.correct .key{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .freebox{
+    background:linear-gradient(135deg,#FFF0F8,#F3E8FF);
+    border:2.5px dashed var(--accent);border-radius:18px;padding:28px;
+    text-align:center;color:var(--accent);font-weight:800;font-size:17px;
+  }
 
   /* ---- answer screen ---- */
-  .anslabel{color:var(--sub);font-weight:800;letter-spacing:1px;font-size:13px;margin-bottom:6px}
-  .answer{font-size:30px;font-weight:900;color:var(--ok);margin:0 0 18px;line-height:1.3}
-  .videowrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:16px;
-    overflow:hidden;border:1px solid var(--line);margin-bottom:16px}
+  .answerbox{
+    position:relative;text-align:center;
+    background:linear-gradient(135deg,#EDFFF8,#E0F7FF);
+    border:3px solid var(--ok);border-radius:24px;
+    padding:26px 24px 28px;margin:0 0 22px;
+    box-shadow:0 8px 28px rgba(6,214,160,.28);
+    animation:pop .45s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+  .anslabel{
+    display:inline-block;color:#fff;font-weight:900;letter-spacing:2px;font-size:13px;
+    margin-bottom:12px;padding:5px 18px;border-radius:999px;
+    background:linear-gradient(135deg,var(--ok),#059669);
+    box-shadow:0 4px 12px rgba(6,214,160,.4);
+  }
+  .anslabel::before{content:"🎯 "}
+  .answer{
+    font-size:46px;font-weight:900;color:var(--ok);margin:0;line-height:1.2;
+    text-shadow:0 2px 0 rgba(6,214,160,.15);
+  }
+  @media(max-width:680px){.answer{font-size:34px}}
+  .videowrap{position:relative;width:100%;aspect-ratio:16/9;background:#1a0033;border-radius:20px;
+    overflow:hidden;border:2px solid var(--line);margin-bottom:16px;box-shadow:var(--shadow2)}
   .videowrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
   .playthumb{position:absolute;inset:0;display:grid;place-items:center;cursor:pointer;
-    background:linear-gradient(135deg,#1b2350,#0d1130)}
-  .playthumb .pcircle{width:84px;height:84px;border-radius:50%;background:var(--accent);
-    display:grid;place-items:center;box-shadow:var(--shadow);transition:.15s}
-  .playthumb:hover .pcircle{transform:scale(1.08)}
+    background:linear-gradient(135deg,#2D1557,#1a0033)}
+  .playthumb .pcircle{
+    width:88px;height:88px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:grid;place-items:center;box-shadow:0 8px 28px rgba(255,107,174,.6);transition:.2s;
+  }
+  .playthumb:hover .pcircle{transform:scale(1.1);box-shadow:0 12px 36px rgba(255,107,174,.7)}
   .playthumb .pcircle::after{content:"";border-style:solid;border-width:16px 0 16px 26px;
     border-color:transparent transparent transparent #fff;margin-left:6px}
-  .playthumb .ptext{position:absolute;bottom:16px;color:var(--sub);font-weight:700;font-size:14px}
-  .comment{background:rgba(255,92,138,.1);border:1px solid rgba(255,92,138,.4);border-radius:14px;
-    padding:16px 20px;font-size:17px;line-height:1.6}
+  .playthumb .ptext{position:absolute;bottom:16px;color:rgba(255,255,255,.7);font-weight:800;font-size:14px}
+  .comment{
+    background:linear-gradient(135deg,#FFF0F8,#F3E8FF);
+    border:2px solid var(--line);border-radius:18px;
+    padding:18px 22px;font-size:16px;line-height:1.7;
+  }
   .comment b{color:var(--accent)}
 
-  .navrow{display:flex;gap:12px;margin-top:24px;align-items:center}
+  .navrow{display:flex;gap:12px;margin-top:24px;align-items:center;flex-wrap:wrap}
   .navrow .spacer{flex:1}
 
   /* ---- create screen ---- */
@@ -107,47 +180,70 @@
   label.fld{display:block;margin-bottom:14px}
   label.fld > span{display:block;font-weight:800;font-size:13px;color:var(--sub);margin-bottom:6px}
   input[type=text],input[type=number],textarea,select{
-    width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:10px;
-    padding:11px 13px;color:var(--txt);font-size:15px;font-family:inherit;
+    width:100%;background:#FAFAFA;border:2px solid var(--line);border-radius:14px;
+    padding:11px 14px;color:var(--txt);font-size:15px;font-family:inherit;font-weight:700;
+    transition:.15s;
   }
   textarea{resize:vertical;min-height:64px}
-  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent2)}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(255,107,174,.12)}
   .seg{display:flex;gap:8px}
-  .seg .opt{flex:1;text-align:center;padding:11px;border:1px solid var(--line);border-radius:10px;
-    cursor:pointer;font-weight:800;color:var(--sub);background:var(--bg2)}
-  .seg .opt.on{background:var(--accent);color:#fff;border-color:transparent}
+  .seg .opt{
+    flex:1;text-align:center;padding:12px;border:2px solid var(--line);border-radius:14px;
+    cursor:pointer;font-weight:900;color:var(--sub);background:#FAFAFA;transition:.15s;
+  }
+  .seg .opt:hover{border-color:var(--accent);color:var(--accent)}
+  .seg .opt.on{background:linear-gradient(135deg,var(--accent),#FF4D9E);color:#fff;border-color:transparent;box-shadow:var(--shadow)}
   .radio{display:flex;align-items:center;gap:8px;margin-top:6px;color:var(--sub);font-size:13px;font-weight:700}
   .qlist{margin-top:8px}
-  .qrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
-    border-radius:12px;padding:12px 16px;margin-bottom:10px}
-  .qrow .idx{width:28px;height:28px;flex:0 0 28px;border-radius:8px;background:var(--card2);
-    display:grid;place-items:center;font-weight:900;color:var(--sub);font-size:14px}
+  .qrow{
+    display:flex;align-items:center;gap:12px;background:var(--card);
+    border:2px solid var(--line);
+    border-radius:18px;padding:14px 18px;margin-bottom:10px;
+    box-shadow:0 2px 8px rgba(155,93,229,.06);transition:.15s;
+  }
+  .qrow:hover{border-color:var(--accent);box-shadow:0 4px 14px rgba(255,107,174,.15)}
+  .qrow .idx{
+    width:30px;height:30px;flex:0 0 30px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:grid;place-items:center;font-weight:900;color:#fff;font-size:13px;
+  }
   .qrow .qmeta{flex:1;min-width:0}
-  .qrow .qmeta .t{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .qrow .qmeta .s{font-size:12px;color:var(--sub);margin-top:2px}
-  .tagx{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;margin-right:6px}
-  .tagx.choice{background:rgba(92,200,255,.15);color:var(--accent2)}
-  .tagx.free{background:rgba(255,180,76,.15);color:var(--warn)}
+  .qrow .qmeta .t{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .qrow .qmeta .s{font-size:12px;color:var(--sub);margin-top:3px;font-weight:700}
+  .tagx{font-size:11px;font-weight:900;padding:3px 10px;border-radius:99px;margin-right:6px}
+  .tagx.choice{background:linear-gradient(135deg,#F0E8FF,#E8D5FF);color:var(--accent2)}
+  .tagx.free{background:linear-gradient(135deg,#FFF8E8,#FFE8C0);color:var(--warn)}
   .row-actions{display:flex;gap:6px}
-  .iconbtn{background:var(--card2);border:1px solid var(--line);color:var(--sub);border-radius:8px;
-    width:36px;height:36px;cursor:pointer;font-size:15px}
-  .iconbtn:hover{color:var(--txt)}
-  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-  .hint{font-size:12px;color:var(--sub);margin-top:4px}
-  .empty{text-align:center;color:var(--sub);padding:40px 0;font-weight:700}
-  .sectitle{font-size:18px;font-weight:900;margin:0 0 14px;display:flex;align-items:center;gap:10px}
-  .sectitle .n{background:var(--accent);color:#fff;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:14px}
-  hr.sep{border:none;border-top:1px solid var(--line);margin:24px 0}
-  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
-    background:var(--ok);color:#053a23;font-weight:800;padding:12px 22px;border-radius:12px;
-    box-shadow:var(--shadow);opacity:0;transition:.25s;pointer-events:none;z-index:50}
+  .iconbtn{
+    background:var(--bg);border:2px solid var(--line);color:var(--sub);border-radius:10px;
+    width:36px;height:36px;cursor:pointer;font-size:14px;transition:.15s;
+    font-family:inherit;
+  }
+  .iconbtn:hover{border-color:var(--accent);color:var(--accent);background:#FFF0F8}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .hint{font-size:12px;color:var(--sub);margin-top:5px;font-weight:700}
+  .empty{text-align:center;color:var(--sub);padding:48px 0;font-weight:800;font-size:16px}
+  .sectitle{font-size:18px;font-weight:900;margin:0 0 16px;display:flex;align-items:center;gap:10px}
+  .sectitle .n{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;width:28px;height:28px;border-radius:10px;
+    display:grid;place-items:center;font-size:15px;box-shadow:0 3px 10px rgba(255,107,174,.35);
+  }
+  hr.sep{border:none;border-top:2px solid var(--line);margin:24px 0}
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+    background:linear-gradient(135deg,var(--ok),#059669);color:#fff;font-weight:900;
+    padding:13px 26px;border-radius:999px;
+    box-shadow:0 6px 24px rgba(6,214,160,.45);opacity:0;transition:.3s;pointer-events:none;z-index:50;
+    font-family:inherit;font-size:15px;
+  }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="topbar">
-    <div class="logo">🎬 YouTubeクイズ<span class="pill" id="chanName">チャンネル</span></div>
+    <div class="logo">🎬 吉田さんちのファミリー日記クイズ<span class="pill hide" id="chanName"></span></div>
     <div class="spacer"></div>
     <div class="tabs">
       <button class="tab active" data-tab="play" id="tabPlay">▶ 出題</button>
@@ -157,13 +253,14 @@
 
   <!-- ============ PLAY: start ============ -->
   <section id="startView" class="card hero">
-    <div id="sharedBanner" class="hide" style="background:rgba(92,200,255,.12);border:1px solid var(--accent2);border-radius:12px;padding:10px 16px;margin-bottom:18px;color:var(--accent2);font-weight:700;font-size:14px">
+    <div id="sharedBanner" class="hide" style="background:linear-gradient(135deg,#F0E8FF,#FFE0F0);border:2px solid var(--line);border-radius:18px;padding:12px 18px;margin-bottom:20px;color:var(--accent2);font-weight:800;font-size:14px">
       🔗 共有されたクイズを開いています
     </div>
-    <h1>クイズスタート</h1>
-    <p>みんなで画面を見ながら、ワイワイ答えよう！</p>
+    <span class="hero-deco">🎉</span>
+    <h1>クイズスタート！</h1>
+    <p>みんなで画面を見ながら、ワイワイ答えよう！✨</p>
     <div class="countbadge" id="startCount">問題数 0</div><br>
-    <button class="btn" id="startBtn" style="font-size:18px;padding:16px 40px">▶ はじめる</button>
+    <button class="btn" id="startBtn" style="font-size:19px;padding:16px 44px">▶ はじめる</button>
     <div id="startEmpty" class="muted hide" style="margin-top:18px">
       まだ問題がありません。右上の「✎ 作成」から追加してください。
     </div>
@@ -188,8 +285,10 @@
 
   <!-- ============ PLAY: answer ============ -->
   <section id="ansView" class="card hide">
-    <div class="anslabel">正解</div>
-    <h2 class="answer" id="ansText">—</h2>
+    <div class="answerbox">
+      <div class="anslabel">正解</div>
+      <h2 class="answer" id="ansText">—</h2>
+    </div>
     <div class="videowrap" id="videoWrap"></div>
     <div id="ytFallback" style="margin:-6px 0 14px"></div>
     <div class="comment hide" id="ansComment"></div>
@@ -271,14 +370,15 @@
       </label>
       <div class="grid2">
         <label class="fld">
-          <span>開始（秒）</span>
-          <input type="number" id="fStart" min="0" placeholder="例：125（2分5秒）">
+          <span>開始</span>
+          <input type="text" id="fStart" placeholder="例：2:05 / 2分5秒 / 125（秒）">
         </label>
         <label class="fld">
-          <span>終了（秒・任意）</span>
-          <input type="number" id="fEnd" min="0" placeholder="空欄なら最後まで">
+          <span>終了（任意）</span>
+          <input type="text" id="fEnd" placeholder="例：3:30 / 空欄なら最後まで">
         </label>
       </div>
+      <div class="hint" style="margin:-6px 0 14px">「2:05」「2分5秒」「125」のどれでもOK（秒のみの数字もそのまま使えます）。</div>
 
       <label class="fld">
         <span>一言コメント（任意・答え合わせで表示）</span>
@@ -410,6 +510,12 @@ function renderQuestion(){
     ? `<span class="qtype choice">4択</span>`
     : `<span class="qtype free">自由回答</span>`;
   let body = `${typeTag}<h2 class="qtext">${esc(q.question)}</h2>`;
+  if(q.videoId){
+    body += `<div class="qthumb">
+      <img src="https://i.ytimg.com/vi/${q.videoId}/hqdefault.jpg" alt="" loading="lazy" onerror="this.parentNode.style.display='none'">
+      <div class="ytmark"></div>
+    </div>`;
+  }
   if(q.type==="choice"){
     body += `<div class="choices">` + q.choices.map((c,i)=>
       `<div class="choice"><span class="key">${"ABCD"[i]}</span><span>${esc(c)}</span></div>`
@@ -532,9 +638,11 @@ function saveQuestion(){
   const videoId = parseVideoId(urlRaw);
   if(urlRaw && !videoId){ toast("YouTube URL / ID が認識できません", true); return; }
 
-  let start = numOrNull($("#fStart").value);
+  let start = parseTime($("#fStart").value);
+  if(start===undefined){ toast("開始時間の形式が正しくありません（例：2:05 / 2分5秒 / 125）", true); return; }
   if(start==null) start = parseStartFromUrl(urlRaw); // URLの t= から補完
-  const end = numOrNull($("#fEnd").value);
+  const end = parseTime($("#fEnd").value);
+  if(end===undefined){ toast("終了時間の形式が正しくありません（例：3:30 / 3分30秒 / 210）", true); return; }
 
   const q = {
     id: editingId || uid(),
@@ -582,8 +690,8 @@ function editQuestion(id){
   $("#fQuestion").value = q.question;
   $("#fAnswer").value = q.answer||"";
   $("#fUrl").value = q.videoId ? ("https://youtu.be/"+q.videoId) : "";
-  $("#fStart").value = q.start||"";
-  $("#fEnd").value = q.end||"";
+  $("#fStart").value = q.start ? secToTime(q.start) : "";
+  $("#fEnd").value = q.end ? secToTime(q.end) : "";
   $("#fComment").value = q.comment||"";
   if(q.type==="choice") buildChoiceRows(q.choices, q.answerIndex);
   window.scrollTo({top:0,behavior:"smooth"});
@@ -680,6 +788,30 @@ $("#importFile").onchange = e=>{
    utils
    ========================================================= */
 function numOrNull(v){ v=String(v).trim(); if(v==="") return null; const n=parseInt(v,10); return isNaN(n)?null:n; }
+/* 「2:05」「2分5秒」「2分」「5秒」「125」などを秒数に変換。空欄→null、解釈不能→undefined */
+function parseTime(v){
+  v = String(v).trim();
+  if(v==="") return null;
+  // mm:ss / hh:mm:ss
+  if(/^\d{1,2}(:\d{1,2}){1,2}$/.test(v)){
+    return v.split(":").reduce((a,n)=>a*60+parseInt(n,10), 0);
+  }
+  // 日本語 1時間2分5秒（各パート任意）
+  const m = v.match(/^(?:(\d+)\s*時間)?\s*(?:(\d+)\s*分)?\s*(?:(\d+)\s*秒)?$/);
+  if(m && (m[1]||m[2]||m[3])){
+    return (+(m[1]||0))*3600 + (+(m[2]||0))*60 + (+(m[3]||0));
+  }
+  // 数字だけ＝秒
+  if(/^\d+$/.test(v)) return parseInt(v,10);
+  return undefined; // 形式エラー
+}
+/* 秒数→入力欄に出す表示（60秒以上は m:ss、未満は数字のまま）*/
+function secToTime(sec){
+  sec = parseInt(sec,10)||0;
+  if(sec < 60) return String(sec);
+  const m = Math.floor(sec/60), s = sec%60;
+  return m + ":" + String(s).padStart(2,"0");
+}
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 function attr(s){ return esc(s); }
 function syncChannelName(){ $("#chanName").textContent = state.channel?state.channel:"チャンネル"; }
